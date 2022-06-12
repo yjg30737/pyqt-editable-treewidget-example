@@ -1,0 +1,1 @@
+from .editableTreeWidgetExample import MainWindow
