@@ -7,6 +7,14 @@ PyQt example of QTreeWidget which is editable (intuitive enough to use)
 ## Setup
 `python -m pip install git+https://github.com/yjg30737/pyqt-editable-treewidget-example.git --upgrade`
 
+## Usage
+Key command
+* Enter/Return - Add new child
+* F2 - Rename attribute
+* Delete - Remove attribute
+* Up/Down - Previous/next attribute
+* Shift+Up/Down - Go parent/child attribute 
+
 ## Example
 Code Sample
 ```python
