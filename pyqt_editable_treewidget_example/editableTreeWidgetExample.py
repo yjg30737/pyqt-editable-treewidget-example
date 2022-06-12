@@ -1,7 +1,8 @@
+import sys
+
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication
 from PyQt5.QtCore import Qt
-
 
 class EditableTreeWidget(QTreeWidget):
 
