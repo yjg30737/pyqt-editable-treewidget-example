@@ -1,5 +1,7 @@
 # pyqt-editable-treewidget-example
-PyQt example of QTreeWidget which is editable (intuitive enough to use)
+PyQt example of QTreeWidget which is editable
+
+Intuitive enough to use, but this is for example only
 
 ## Requirements
 * PyQt5 >= 5.8
@@ -14,6 +16,10 @@ Key command
 * Delete - Remove attribute
 * Up/Down - Previous/next attribute
 * Shift+Up/Down - Go parent/child attribute 
+
+Context Menu
+* Add parent attribute
+* Add child attribute
 
 ## Example
 Code Sample
