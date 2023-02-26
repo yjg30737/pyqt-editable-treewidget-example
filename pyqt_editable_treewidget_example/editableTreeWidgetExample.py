@@ -1,7 +1,8 @@
 import sys
 
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
+    QGroupBox, QWidget, QVBoxLayout, QCheckBox
 from PyQt5.QtCore import Qt
 
 class EditableTreeWidget(QTreeWidget):
@@ -96,6 +97,10 @@ class EditableTreeWidget(QTreeWidget):
         else:
             self.takeTopLevelItem(self.indexOfTopLevelItem(self.currentItem()))
 
+    def event(self, e):
+        return super().event(e)
+
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -103,6 +108,72 @@ class MainWindow(QMainWindow):
         self.__initUi()
 
     def __initUi(self):
-        widget = EditableTreeWidget()
-        self.setCentralWidget(widget)
+        self.__treeWidget = EditableTreeWidget()
+        self.__treeWidget.itemChanged.connect(self.__treeWidgetItemChanged)
 
+        extendedSelectionChkBox = QCheckBox('Extended Selection')
+        extendedSelectionChkBox.toggled.connect(self.__extendedSelectionToggled)
+
+        self.__makeItUnableToChangeWhichHasChild = QCheckBox('Make it unable to change item\'s name which has child')
+        self.__makeItUnableToChangeWhichHasChild.toggled.connect(self.__makeItUnableToChangeWhichHasChildToggled)
+
+        lay = QVBoxLayout()
+        lay.addWidget(extendedSelectionChkBox)
+        lay.addWidget(self.__makeItUnableToChangeWhichHasChild)
+        lay.setAlignment(Qt.AlignTop)
+
+        optionGrpBox = QGroupBox('Option')
+        optionGrpBox.setLayout(lay)
+
+        lay = QHBoxLayout()
+        lay.addWidget(self.__treeWidget)
+        lay.addWidget(optionGrpBox)
+
+        mainWidget = QWidget()
+        mainWidget.setLayout(lay)
+
+        self.setCentralWidget(mainWidget)
+
+    def __extendedSelectionToggled(self, f):
+        if f:
+            self.__treeWidget.setSelectionMode(QTreeWidget.ExtendedSelection)
+        else:
+            self.__treeWidget.setSelectionMode(QTreeWidget.SingleSelection)
+        self.__treeWidget.clearSelection()
+
+    def __makeItUnableToChangeWhichHasChildToggled(self, f):
+        if f:
+            for i in range(self.__treeWidget.topLevelItemCount()):
+                item = self.__treeWidget.topLevelItem(i)
+                while item:
+                    if item.childCount() > 0:
+                        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                        item = item.child(0)
+                    else:
+                        item.setFlags(item.flags() | Qt.ItemIsEditable)
+                        break
+        else:
+            for i in range(self.__treeWidget.topLevelItemCount()):
+                item = self.__treeWidget.topLevelItem(i)
+                while item:
+                    if item.childCount() > 0:
+                        item.setFlags(item.flags() | Qt.ItemIsEditable)
+                        item = item.child(0)
+                    else:
+                        break
+
+    def __treeWidgetItemChanged(self, item: QTreeWidgetItem):
+        f = self.__makeItUnableToChangeWhichHasChild.isChecked()
+        if f:
+            parentItem = item.parent()
+            if parentItem:
+                parentItem.setFlags(item.flags() & ~Qt.ItemIsEditable)
+
+
+if __name__ == "__main__":
+    import sys
+
+    app = QApplication(sys.argv)
+    example = MainWindow()
+    example.show()
+    app.exec_()
