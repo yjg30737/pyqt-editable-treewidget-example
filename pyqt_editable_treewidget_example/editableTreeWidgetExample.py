@@ -2,8 +2,9 @@ import sys
 
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
-    QGroupBox, QWidget, QVBoxLayout, QCheckBox
+    QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu
 from PyQt5.QtCore import Qt
+
 
 class EditableTreeWidget(QTreeWidget):
 
@@ -12,23 +13,37 @@ class EditableTreeWidget(QTreeWidget):
         self.__initUi()
 
     def __initUi(self):
+        self.__editedAtOnce = False
+
         item = QTreeWidgetItem(self)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         item.setText(0, 'Parent Attribute')
         self.setCurrentItem(item)
 
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
-
-        addParentAttrAction = QAction("Add parent attribute", self)
-        self.addAction(addParentAttrAction)
-        addParentAttrAction.triggered.connect(self.addParentAttr)
-
-        addChildAttrAction = QAction("Add child attribute", self)
-        self.addAction(addChildAttrAction)
-        addChildAttrAction.triggered.connect(self.addChildAttr)
-
         self.header().setVisible(False)
         self.setIndentation(10)
+
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.__prepareMenu)
+
+    def __prepareMenu(self, pos):
+        menu = QMenu(self)
+
+        addParentAttrAction = QAction("Add parent attribute")
+        addParentAttrAction.triggered.connect(self.addParentAttr)
+
+        addChildAttrAction = QAction("Add child attribute")
+        addChildAttrAction.triggered.connect(self.addChildAttr)
+
+        menu.addAction(addParentAttrAction)
+        menu.addAction(addChildAttrAction)
+
+        if self.itemAt(pos):
+            renameAction = QAction('Rename')
+            renameAction.triggered.connect(self.rename)
+            menu.addAction(renameAction)
+
+        menu.exec(self.mapToGlobal(pos))
 
     def keyPressEvent(self, e):
         try:
@@ -86,6 +101,10 @@ class EditableTreeWidget(QTreeWidget):
         self.currentItem().addChild(item)
         self.setCurrentItem(item)
         self.editItem(item, 0)
+
+    def rename(self):
+        self.editItem(self.currentItem(), 0)
+        self.__editedAtOnce = True
 
     def remove_attr(self):
         parent_item = self.currentItem().parent()
