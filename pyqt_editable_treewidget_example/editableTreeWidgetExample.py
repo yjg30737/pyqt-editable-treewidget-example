@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
-    QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton
+    QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton, QFileDialog
 from PyQt5.QtCore import Qt, QSettings
 
 
@@ -88,14 +88,16 @@ class EditableTreeWidget(QTreeWidget):
 #        elif e.key() == Qt.Key_Up:
 #        elif e.key() == Qt.Key_Down:
 
-    def addParentAttr(self, text='dic'):
+    def addParentAttr(self, text):
+        text = 'dic' if not text or isinstance(text, bool) else text
         item = QTreeWidgetItem(self)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         item.setText(0, text)
         self.setCurrentItem(item)
         self.editItem(item, 0)
 
-    def addChildAttr(self, text='New Attr'):
+    def addChildAttr(self, text):
+        text = 'New Attr' if not text or isinstance(text, bool) else text
         item = QTreeWidgetItem()
         item.setText(0, text)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
@@ -142,16 +144,16 @@ class MainWindow(QMainWindow):
         self.__makeItUnableToChangeWhichHasChild = QCheckBox('Make it unable to change item\'s name which has child')
         self.__makeItUnableToChangeWhichHasChild.toggled.connect(self.__makeItUnableToChangeWhichHasChildToggled)
 
-        # loadBtn = QPushButton('Load')
-        # loadBtn.clicked.connect(self.__load)
+        loadBtn = QPushButton('Load')
+        loadBtn.clicked.connect(self.__load)
 
         saveBtn = QPushButton('Save')
         saveBtn.clicked.connect(self.__save)
 
-
         lay = QVBoxLayout()
         lay.addWidget(extendedSelectionChkBox)
         lay.addWidget(self.__makeItUnableToChangeWhichHasChild)
+        lay.addWidget(loadBtn)
         lay.addWidget(saveBtn)
         lay.setAlignment(Qt.AlignTop)
 
@@ -197,22 +199,20 @@ class MainWindow(QMainWindow):
                     else:
                         break
 
-    # def __load(self):
-    #     def dict_to_tree(tree):
-    #         result = {}
-    #         for i in range(tree.items()):
-    #             item = QTreeWidgetItem()
-    #             result[item.text(0)] = dict_to_tree_helper(item)
-    #         return result
-    #
-    #     def dict_to_tree_helper(item):
-    #         result = {}
-    #         for i in range(item.childCount()):
-    #             child = item.child(i)
-    #             self.__treeWidget.addChildAttr()
-    #             result[child.text(0)] = dict_to_tree_helper(child)
-    #         return result
+    def __load(self):
+        data = eval(self.__settings_struct.value('dict'))
+        def dictToTree(data, parent):
+            for key, value in data.items():
+                item = QTreeWidgetItem(parent)
+                item.setText(0, str(key))
+                item.setFlags(item.flags() | Qt.ItemIsEditable)
+                if isinstance(value, dict):
+                    dictToTree(value, item)
+                else:
+                    item.setText(1, str(value))
 
+        self.__treeWidget.clear()
+        dictToTree(data, self.__treeWidget.invisibleRootItem())
 
     def __save(self):
         def treeToDict(tree):
