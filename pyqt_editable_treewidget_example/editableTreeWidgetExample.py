@@ -149,9 +149,6 @@ class MainWindow(QMainWindow):
         self.__makeItUnableToChangeWhichHasChild = QCheckBox('Make it unable to change item\'s name which has child')
         self.__makeItUnableToChangeWhichHasChild.toggled.connect(self.__makeItUnableToChangeWhichHasChildToggled)
 
-        loadBtn = QPushButton('Load')
-        loadBtn.clicked.connect(self.__load)
-
         saveBtn = QPushButton('Save')
         saveBtn.clicked.connect(self.__save)
 
@@ -159,7 +156,6 @@ class MainWindow(QMainWindow):
         lay.addWidget(extendedSelectionChkBox)
         lay.addWidget(self.__makeItUnableToChangeWhichHasChild)
         lay.addWidget(self.__duplicatedChkBox)
-        lay.addWidget(loadBtn)
         lay.addWidget(saveBtn)
         lay.setAlignment(Qt.AlignTop)
 
@@ -174,6 +170,8 @@ class MainWindow(QMainWindow):
         mainWidget.setLayout(lay)
 
         self.setCentralWidget(mainWidget)
+
+        self.__load()
 
     def __extendedSelectionToggled(self, f):
         if f:
