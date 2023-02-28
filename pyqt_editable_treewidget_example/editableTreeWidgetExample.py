@@ -141,6 +141,11 @@ class MainWindow(QMainWindow):
         extendedSelectionChkBox = QCheckBox('Extended Selection')
         extendedSelectionChkBox.toggled.connect(self.__extendedSelectionToggled)
 
+        self.__duplicatedChkBox = QCheckBox('Allow duplicated name (testing)')
+        self.__duplicatedChkBox.toggled.connect(self.__allowDuplicated)
+        self.__duplicatedChkBox.setChecked(True)
+        self.__duplicatedChkBox.setDisabled(True)
+
         self.__makeItUnableToChangeWhichHasChild = QCheckBox('Make it unable to change item\'s name which has child')
         self.__makeItUnableToChangeWhichHasChild.toggled.connect(self.__makeItUnableToChangeWhichHasChildToggled)
 
@@ -153,6 +158,7 @@ class MainWindow(QMainWindow):
         lay = QVBoxLayout()
         lay.addWidget(extendedSelectionChkBox)
         lay.addWidget(self.__makeItUnableToChangeWhichHasChild)
+        lay.addWidget(self.__duplicatedChkBox)
         lay.addWidget(loadBtn)
         lay.addWidget(saveBtn)
         lay.setAlignment(Qt.AlignTop)
@@ -198,6 +204,9 @@ class MainWindow(QMainWindow):
                         item = item.child(0)
                     else:
                         break
+
+    def __allowDuplicated(self):
+        print('__allowDuplicated')
 
     def __load(self):
         data = eval(self.__settings_struct.value('dict'))
