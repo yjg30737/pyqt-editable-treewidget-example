@@ -2,8 +2,8 @@ import sys
 
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
-    QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu
-from PyQt5.QtCore import Qt
+    QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton
+from PyQt5.QtCore import Qt, QSettings
 
 
 class EditableTreeWidget(QTreeWidget):
@@ -88,16 +88,16 @@ class EditableTreeWidget(QTreeWidget):
 #        elif e.key() == Qt.Key_Up:
 #        elif e.key() == Qt.Key_Down:
 
-    def addParentAttr(self):
+    def addParentAttr(self, text='dic'):
         item = QTreeWidgetItem(self)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
-        item.setText(0, 'dic')
+        item.setText(0, text)
         self.setCurrentItem(item)
         self.editItem(item, 0)
 
-    def addChildAttr(self):
+    def addChildAttr(self, text='New Attr'):
         item = QTreeWidgetItem()
-        item.setText(0, 'New Attr')
+        item.setText(0, text)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         self.currentItem().addChild(item)
         self.setCurrentItem(item)
@@ -127,7 +127,11 @@ class EditableTreeWidget(QTreeWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.__initVal()
         self.__initUi()
+
+    def __initVal(self):
+        self.__settings_struct = QSettings('tree.ini', QSettings.IniFormat)
 
     def __initUi(self):
         self.__treeWidget = EditableTreeWidget()
@@ -138,12 +142,20 @@ class MainWindow(QMainWindow):
         self.__makeItUnableToChangeWhichHasChild = QCheckBox('Make it unable to change item\'s name which has child')
         self.__makeItUnableToChangeWhichHasChild.toggled.connect(self.__makeItUnableToChangeWhichHasChildToggled)
 
+        # loadBtn = QPushButton('Load')
+        # loadBtn.clicked.connect(self.__load)
+
+        saveBtn = QPushButton('Save')
+        saveBtn.clicked.connect(self.__save)
+
+
         lay = QVBoxLayout()
         lay.addWidget(extendedSelectionChkBox)
         lay.addWidget(self.__makeItUnableToChangeWhichHasChild)
+        lay.addWidget(saveBtn)
         lay.setAlignment(Qt.AlignTop)
 
-        optionGrpBox = QGroupBox('Option')
+        optionGrpBox = QGroupBox('Control')
         optionGrpBox.setLayout(lay)
 
         lay = QHBoxLayout()
@@ -184,6 +196,42 @@ class MainWindow(QMainWindow):
                         item = item.child(0)
                     else:
                         break
+
+    # def __load(self):
+    #     def dict_to_tree(tree):
+    #         result = {}
+    #         for i in range(tree.items()):
+    #             item = QTreeWidgetItem()
+    #             result[item.text(0)] = dict_to_tree_helper(item)
+    #         return result
+    #
+    #     def dict_to_tree_helper(item):
+    #         result = {}
+    #         for i in range(item.childCount()):
+    #             child = item.child(i)
+    #             self.__treeWidget.addChildAttr()
+    #             result[child.text(0)] = dict_to_tree_helper(child)
+    #         return result
+
+
+    def __save(self):
+        def treeToDict(tree):
+            result = {}
+            for i in range(tree.topLevelItemCount()):
+                item = tree.topLevelItem(i)
+                result[item.text(0)] = treeToDictHelper(item)
+            return result
+
+        def treeToDictHelper(item):
+            result = {}
+            for i in range(item.childCount()):
+                child = item.child(i)
+                result[child.text(0)] = treeToDictHelper(child)
+            return result
+
+        treeDict = treeToDict(self.__treeWidget)
+        treeDictStr = str(treeDict)
+        self.__settings_struct.setValue('dict', treeDictStr)
 
 
 if __name__ == "__main__":
