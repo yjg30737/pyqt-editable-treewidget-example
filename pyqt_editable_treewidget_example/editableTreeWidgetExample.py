@@ -14,6 +14,7 @@ class EditableTreeWidget(QTreeWidget):
 
     def __initUi(self):
         self.__editedAtOnce = False
+        self.__parentItemShouldNotChangedFlag = False
 
         item = QTreeWidgetItem(self)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
@@ -101,6 +102,8 @@ class EditableTreeWidget(QTreeWidget):
         self.currentItem().addChild(item)
         self.setCurrentItem(item)
         self.editItem(item, 0)
+        if self.__parentItemShouldNotChangedFlag:
+            item.parent().setFlags(item.flags() & ~Qt.ItemIsEditable)
 
     def rename(self):
         self.editItem(self.currentItem(), 0)
@@ -116,8 +119,8 @@ class EditableTreeWidget(QTreeWidget):
         else:
             self.takeTopLevelItem(self.indexOfTopLevelItem(self.currentItem()))
 
-    def event(self, e):
-        return super().event(e)
+    def parentItemShouldNotChanged(self, f):
+        self.__parentItemShouldNotChangedFlag = f
 
 
 
@@ -128,7 +131,6 @@ class MainWindow(QMainWindow):
 
     def __initUi(self):
         self.__treeWidget = EditableTreeWidget()
-        self.__treeWidget.itemChanged.connect(self.__treeWidgetItemChanged)
 
         extendedSelectionChkBox = QCheckBox('Extended Selection')
         extendedSelectionChkBox.toggled.connect(self.__extendedSelectionToggled)
@@ -160,7 +162,9 @@ class MainWindow(QMainWindow):
             self.__treeWidget.setSelectionMode(QTreeWidget.SingleSelection)
         self.__treeWidget.clearSelection()
 
+    # update all previous ones who have the child to toggle the ItemIsEditable flag
     def __makeItUnableToChangeWhichHasChildToggled(self, f):
+        self.__treeWidget.parentItemShouldNotChanged(f)
         if f:
             for i in range(self.__treeWidget.topLevelItemCount()):
                 item = self.__treeWidget.topLevelItem(i)
@@ -180,13 +184,6 @@ class MainWindow(QMainWindow):
                         item = item.child(0)
                     else:
                         break
-
-    def __treeWidgetItemChanged(self, item: QTreeWidgetItem):
-        f = self.__makeItUnableToChangeWhichHasChild.isChecked()
-        if f:
-            parentItem = item.parent()
-            if parentItem:
-                parentItem.setFlags(item.flags() & ~Qt.ItemIsEditable)
 
 
 if __name__ == "__main__":
