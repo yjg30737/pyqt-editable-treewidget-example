@@ -207,19 +207,20 @@ class MainWindow(QMainWindow):
         print('__allowDuplicated')
 
     def __load(self):
-        data = eval(self.__settings_struct.value('dict'))
-        def dictToTree(data, parent):
-            for key, value in data.items():
-                item = QTreeWidgetItem(parent)
-                item.setText(0, str(key))
-                item.setFlags(item.flags() | Qt.ItemIsEditable)
-                if isinstance(value, dict):
-                    dictToTree(value, item)
-                else:
-                    item.setText(1, str(value))
+        if self.__settings_struct.value('dict'):
+            data = eval(self.__settings_struct.value('dict'))
+            def dictToTree(data, parent):
+                for key, value in data.items():
+                    item = QTreeWidgetItem(parent)
+                    item.setText(0, str(key))
+                    item.setFlags(item.flags() | Qt.ItemIsEditable)
+                    if isinstance(value, dict):
+                        dictToTree(value, item)
+                    else:
+                        item.setText(1, str(value))
 
-        self.__treeWidget.clear()
-        dictToTree(data, self.__treeWidget.invisibleRootItem())
+            self.__treeWidget.clear()
+            dictToTree(data, self.__treeWidget.invisibleRootItem())
 
     def __save(self):
         def treeToDict(tree):
