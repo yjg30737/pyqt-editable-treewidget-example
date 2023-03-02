@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtGui import QKeySequence, QFont
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
     QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton, QFileDialog, QSpinBox, QLabel, QSpacerItem, \
-    QSizePolicy
+    QSizePolicy, QSplitter
 from PyQt5.QtCore import Qt, QSettings
 
 
@@ -158,7 +158,6 @@ class MainWindow(QMainWindow):
         lay = QVBoxLayout()
         lay.addWidget(leftTopWidget)
         lay.addWidget(self.__treeWidget)
-        lay.setContentsMargins(0, 0, 0, 0)
 
         leftWidget = QWidget()
         leftWidget.setLayout(lay)
@@ -187,14 +186,16 @@ class MainWindow(QMainWindow):
         optionGrpBox = QGroupBox('Control')
         optionGrpBox.setLayout(lay)
 
-        lay = QHBoxLayout()
-        lay.addWidget(leftWidget)
-        lay.addWidget(optionGrpBox)
+        leftWidget.setObjectName('leftWidget')
+        leftWidget.setStyleSheet('QWidget#leftWidget { background-color: #DDD }')
 
-        mainWidget = QWidget()
-        mainWidget.setLayout(lay)
+        splitter = QSplitter()
+        splitter.addWidget(leftWidget)
+        splitter.addWidget(optionGrpBox)
+        splitter.setSizes([600, 400])
+        splitter.setChildrenCollapsible(False)
 
-        self.setCentralWidget(mainWidget)
+        self.setCentralWidget(splitter)
 
         self.__load()
 
