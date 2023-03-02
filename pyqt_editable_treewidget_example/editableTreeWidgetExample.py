@@ -1,8 +1,9 @@
 import sys
 
-from PyQt5.QtGui import QKeySequence
+from PyQt5.QtGui import QKeySequence, QFont
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
-    QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton, QFileDialog
+    QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton, QFileDialog, QSpinBox, QLabel, QSpacerItem, \
+    QSizePolicy
 from PyQt5.QtCore import Qt, QSettings
 
 
@@ -125,7 +126,6 @@ class EditableTreeWidget(QTreeWidget):
         self.__parentItemShouldNotChangedFlag = f
 
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -137,6 +137,31 @@ class MainWindow(QMainWindow):
 
     def __initUi(self):
         self.__treeWidget = EditableTreeWidget()
+
+        addColBtn = QPushButton('Add Column')
+        delColBtn = QPushButton('Delete Column')
+
+        treeLbl = QLabel('Tree')
+        treeLblFont = QFont('Arial', 12)
+        treeLbl.setFont(treeLblFont)
+
+        lay = QHBoxLayout()
+        lay.addWidget(treeLbl)
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addWidget(addColBtn)
+        lay.addWidget(delColBtn)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        leftTopWidget = QWidget()
+        leftTopWidget.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(leftTopWidget)
+        lay.addWidget(self.__treeWidget)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        leftWidget = QWidget()
+        leftWidget.setLayout(lay)
 
         extendedSelectionChkBox = QCheckBox('Extended Selection')
         extendedSelectionChkBox.toggled.connect(self.__extendedSelectionToggled)
@@ -163,7 +188,7 @@ class MainWindow(QMainWindow):
         optionGrpBox.setLayout(lay)
 
         lay = QHBoxLayout()
-        lay.addWidget(self.__treeWidget)
+        lay.addWidget(leftWidget)
         lay.addWidget(optionGrpBox)
 
         mainWidget = QWidget()
