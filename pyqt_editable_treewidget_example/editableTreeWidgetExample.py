@@ -136,6 +136,7 @@ class MainWindow(QMainWindow):
         self.__settings_struct = QSettings('tree.ini', QSettings.IniFormat)
 
     def __initUi(self):
+        self.setWindowTitle('QTreeWidget Playground')
         self.__treeWidget = EditableTreeWidget()
         self.__treeWidget.setHeaderLabels(['Name', 'Description'])
         self.__treeWidget.setHeaderHidden(True)
