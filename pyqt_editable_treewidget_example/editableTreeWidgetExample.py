@@ -89,7 +89,7 @@ class EditableTreeWidget(QTreeWidget):
 #        elif e.key() == Qt.Key_Up:
 #        elif e.key() == Qt.Key_Down:
 
-    def addParentAttr(self, text):
+    def addParentAttr(self, text=None):
         text = 'dic' if not text or isinstance(text, bool) else text
         item = QTreeWidgetItem(self)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
@@ -97,7 +97,7 @@ class EditableTreeWidget(QTreeWidget):
         self.setCurrentItem(item)
         self.editItem(item, 0)
 
-    def addChildAttr(self, text):
+    def addChildAttr(self, text=None):
         text = 'New Attr' if not text or isinstance(text, bool) else text
         item = QTreeWidgetItem()
         item.setText(0, text)
@@ -137,6 +137,8 @@ class MainWindow(QMainWindow):
 
     def __initUi(self):
         self.__treeWidget = EditableTreeWidget()
+        self.__treeWidget.setHeaderLabels(['Name', 'Description'])
+        self.__treeWidget.setHeaderHidden(True)
 
         addColBtn = QPushButton('Add Column')
         delColBtn = QPushButton('Delete Column')
@@ -152,11 +154,12 @@ class MainWindow(QMainWindow):
         lay.addWidget(delColBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        leftTopWidget = QWidget()
-        leftTopWidget.setLayout(lay)
+        self.__leftTopWidget = QWidget()
+        self.__leftTopWidget.setLayout(lay)
+        self.__leftTopWidget.setVisible(False)
 
         lay = QVBoxLayout()
-        lay.addWidget(leftTopWidget)
+        lay.addWidget(self.__leftTopWidget)
         lay.addWidget(self.__treeWidget)
 
         leftWidget = QWidget()
@@ -164,7 +167,7 @@ class MainWindow(QMainWindow):
 
         extendedSelectionChkBox = QCheckBox('Extended Selection')
         extendedSelectionChkBox.toggled.connect(self.__extendedSelectionToggled)
-
+        
         self.__duplicatedChkBox = QCheckBox('Allow duplicated name (testing)')
         self.__duplicatedChkBox.toggled.connect(self.__allowDuplicated)
         self.__duplicatedChkBox.setChecked(True)
@@ -173,6 +176,11 @@ class MainWindow(QMainWindow):
         self.__makeItUnableToChangeWhichHasChild = QCheckBox('Make it unable to change item\'s name which has child')
         self.__makeItUnableToChangeWhichHasChild.toggled.connect(self.__makeItUnableToChangeWhichHasChildToggled)
 
+        multiColumnChkBox = QCheckBox('Multi Column Mode (testing)')
+        multiColumnChkBox.setChecked(False)
+        multiColumnChkBox.setDisabled(True)
+        multiColumnChkBox.toggled.connect(self.__multiColumnToggled)
+        
         saveBtn = QPushButton('Save')
         saveBtn.clicked.connect(self.__save)
 
@@ -180,6 +188,7 @@ class MainWindow(QMainWindow):
         lay.addWidget(extendedSelectionChkBox)
         lay.addWidget(self.__makeItUnableToChangeWhichHasChild)
         lay.addWidget(self.__duplicatedChkBox)
+        lay.addWidget(multiColumnChkBox)
         lay.addWidget(saveBtn)
         lay.setAlignment(Qt.AlignTop)
 
@@ -231,6 +240,10 @@ class MainWindow(QMainWindow):
 
     def __allowDuplicated(self):
         print('__allowDuplicated')
+        
+    def __multiColumnToggled(self, f):
+        self.__leftTopWidget.setVisible(f)
+        self.__treeWidget.setHeaderHidden(f)
 
     def __load(self):
         if self.__settings_struct.value('dict'):
