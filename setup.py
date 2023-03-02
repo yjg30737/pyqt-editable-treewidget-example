@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyqt-editable-treewidget-example',
-    version='0.0.131',
+    version='0.0.14',
     author='Jung Gyu Yoon',
     author_email='yjg30737@gmail.com',
     license='MIT',
