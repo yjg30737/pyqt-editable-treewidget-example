@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtGui import QKeySequence, QFont
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
     QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton, QFileDialog, QSpinBox, QLabel, QSpacerItem, \
-    QSizePolicy, QSplitter
+    QSizePolicy, QSplitter, QTableWidget
 from PyQt5.QtCore import Qt, QSettings
 
 
@@ -185,6 +185,15 @@ class MainWindow(QMainWindow):
         saveBtn = QPushButton('Save')
         saveBtn.clicked.connect(self.__save)
 
+        keyCommandTable = QTableWidget()
+        keyCommandTable.setVisible(False)
+
+        lay = QVBoxLayout()
+        lay.addWidget(keyCommandTable)
+
+        controlGrpBox = QGroupBox('Control (testing)')
+        controlGrpBox.setLayout(lay)
+
         lay = QVBoxLayout()
         lay.addWidget(extendedSelectionChkBox)
         lay.addWidget(self.__makeItUnableToChangeWhichHasChild)
@@ -193,15 +202,22 @@ class MainWindow(QMainWindow):
         lay.addWidget(saveBtn)
         lay.setAlignment(Qt.AlignTop)
 
-        optionGrpBox = QGroupBox('Control')
+        optionGrpBox = QGroupBox('Option')
         optionGrpBox.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(controlGrpBox)
+        lay.addWidget(optionGrpBox)
+
+        rightWidget = QWidget()
+        rightWidget.setLayout(lay)
 
         leftWidget.setObjectName('leftWidget')
         leftWidget.setStyleSheet('QWidget#leftWidget { background-color: #DDD }')
 
         splitter = QSplitter()
         splitter.addWidget(leftWidget)
-        splitter.addWidget(optionGrpBox)
+        splitter.addWidget(rightWidget)
         splitter.setSizes([600, 400])
         splitter.setChildrenCollapsible(False)
 
