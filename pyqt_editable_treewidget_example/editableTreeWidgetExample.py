@@ -22,7 +22,8 @@ class MainWindow(QMainWindow):
     def __initUi(self):
         self.setWindowTitle('QTreeWidget Playground')
         self.__treeWidget = EditableTreeWidget()
-        self.__treeWidget.setHeaderLabels(['Name', 'Description'])
+        # ['Name', 'Description']
+        self.__treeWidget.setHeaderLabels(['Name'])
         self.__treeWidget.setHeaderHidden(True)
 
         addColBtn = QPushButton('Add Column')
