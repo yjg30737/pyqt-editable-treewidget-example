@@ -4,7 +4,7 @@ from PyQt5.QtGui import QKeySequence, QFont
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
     QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton, QFileDialog, QSpinBox, QLabel, QSpacerItem, \
     QSizePolicy, QSplitter, QTableWidget
-from PyQt5.QtCore import Qt, QSettings, QJsonDocument
+from PyQt5.QtCore import Qt, QSettings
 
 from pyqt_editable_treewidget_example.editableTreeWidget import EditableTreeWidget
 from pyqt_editable_treewidget_example.keyCommandWidget import KeyBindingWidget
@@ -13,7 +13,11 @@ from pyqt_editable_treewidget_example.keyCommandWidget import KeyBindingWidget
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.__initVal()
         self.__initUi()
+
+    def __initVal(self):
+        self.__settings_struct = QSettings('tree.ini', QSettings.IniFormat)
 
     def __initUi(self):
         self.setWindowTitle('QTreeWidget Playground')
@@ -49,6 +53,8 @@ class MainWindow(QMainWindow):
 
         extendedSelectionChkBox = QCheckBox('Extended Selection')
         extendedSelectionChkBox.toggled.connect(self.__extendedSelectionToggled)
+        f = True if self.__settings_struct.value('selection') == '1' else False
+        extendedSelectionChkBox.setChecked(f)
         
         self.__duplicatedChkBox = QCheckBox('Allow duplicated name (testing)')
         self.__duplicatedChkBox.toggled.connect(self.__allowDuplicated)
@@ -105,12 +111,17 @@ class MainWindow(QMainWindow):
 
         self.__load()
 
+        # set the attributes which should set after the loading
+        f = True if self.__settings_struct.value('makeItUnableToChangeWhichHasChild') == '1' else False
+        self.__makeItUnableToChangeWhichHasChild.setChecked(f)
+
     def __extendedSelectionToggled(self, f):
         if f:
             self.__treeWidget.setSelectionMode(QTreeWidget.ExtendedSelection)
         else:
             self.__treeWidget.setSelectionMode(QTreeWidget.SingleSelection)
         self.__treeWidget.clearSelection()
+        self.__settings_struct.setValue('selection', str(int(f)))
 
     # update all previous ones who have the child to toggle the ItemIsEditable flag
     def __makeItUnableToChangeWhichHasChildToggled(self, f):
@@ -134,6 +145,7 @@ class MainWindow(QMainWindow):
                         item = item.child(0)
                     else:
                         break
+        self.__settings_struct.setValue('makeItUnableToChangeWhichHasChild', str(int(f)))
 
     def __allowDuplicated(self):
         print('__allowDuplicated')
