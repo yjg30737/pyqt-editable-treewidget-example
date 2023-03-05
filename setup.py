@@ -7,6 +7,7 @@ setup(
     author_email='yjg30737@gmail.com',
     license='MIT',
     packages=find_packages(),
+    package_data={'pyqt_editable_treewidget_example.ico': ['lock.svg']},
     description='PyQt example of QTreeWidget which is editable (intuitive enough to use)',
     url='https://github.com/yjg30737/pyqt-editable-treewidget-example.git',
     install_requires=[
