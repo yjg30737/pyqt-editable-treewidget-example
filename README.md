@@ -14,8 +14,9 @@ Intuitive enough to use, but this is for example only
 * Support multiple options:
     * make it unable to edit the parent item's name which has the child
     * user can make the certain item not editable
+* Convert QTreeWidget hierarchy into JSON format
     * convert the QTreeWidget hierarchy into JSON format (in Python, array of Python dictionary) to save in "tree.json"
-    * Load the saved JSON content and convert it into QTreeWidget when user executes the window again
+    * Load the saved JSON content from "tree.json" and convert it into QTreeWidget when user executes the window again
     
 The each object of tree.json contains multiple properties - name of the item(name), editable flag(editable), childs of the item(data)
 
