@@ -186,32 +186,38 @@ class MainWindow(QMainWindow):
             json_data = json.load(f)
 
             def dictToTree(data, parent):
-                for key, value in data.items():
+                for obj in data:
                     item = EditableTreeWidgetItem(parent)
-                    item.setText(0, str(key))
-                    item.setFlags(item.flags() | Qt.ItemIsEditable)
-                    if isinstance(value, dict):
-                        dictToTree(value, item)
+                    item.setText(0, obj['name'])
+                    if obj['editable']:
+                        item.setFlags(item.flags() | Qt.ItemIsEditable)
                     else:
-                        item.setText(1, str(value))
+                        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+
+                    if len(obj['data']) > 0:
+                        dictToTree(obj['data'], item)
 
             self.__treeWidget.clear()
             dictToTree(json_data, self.__treeWidget.invisibleRootItem())
 
     def __save(self):
         def treeToDict(tree):
-            result = {}
+            result_obj_lst = []
             for i in range(tree.topLevelItemCount()):
                 item = tree.topLevelItem(i)
-                result[item.text(0)] = treeToDictHelper(item)
-            return result
+                result_obj = {'name': item.text(0), 'editable': bool(item.flags() & Qt.ItemIsEditable),
+                              'data': treeToDictHelper(item)}
+                result_obj_lst.append(result_obj)
+            return result_obj_lst
 
         def treeToDictHelper(item):
-            result = {}
+            result_obj_lst = []
             for i in range(item.childCount()):
                 child = item.child(i)
-                result[child.text(0)] = treeToDictHelper(child)
-            return result
+                result_obj = {'name': child.text(0), 'editable': bool(child.flags() & Qt.ItemIsEditable),
+                              'data': treeToDictHelper(child)}
+                result_obj_lst.append(result_obj)
+            return result_obj_lst
 
         treeDict = treeToDict(self.__treeWidget)
 
