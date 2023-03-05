@@ -40,12 +40,31 @@ class MainWindow(QMainWindow):
         lay.addWidget(delColBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        self.__leftTopWidget = QWidget()
-        self.__leftTopWidget.setLayout(lay)
-        self.__leftTopWidget.setVisible(False)
+        self.__leftNavWidget = QWidget()
+        self.__leftNavWidget.setLayout(lay)
+        self.__leftNavWidget.setVisible(False)
+
+        self.__expandTreeBtn = QPushButton('Expand')
+        self.__expandTreeBtn.setCheckable(True)
+        self.__expandTreeBtn.toggled.connect(self.__expandToggled)
+
+        lay = QHBoxLayout()
+        lay.addWidget(self.__expandTreeBtn)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        self.__rightNavWidget = QWidget()
+        self.__rightNavWidget.setLayout(lay)
+
+        lay = QHBoxLayout()
+        lay.addWidget(self.__leftNavWidget)
+        lay.addWidget(self.__rightNavWidget)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        navWidget = QWidget()
+        navWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__leftTopWidget)
+        lay.addWidget(navWidget)
         lay.addWidget(self.__treeWidget)
 
         leftWidget = QWidget()
@@ -115,6 +134,14 @@ class MainWindow(QMainWindow):
         f = True if self.__settings_struct.value('makeItUnableToChangeWhichHasChild') == '1' else False
         self.__makeItUnableToChangeWhichHasChild.setChecked(f)
 
+    def __expandToggled(self, f):
+        if f:
+            self.__treeWidget.expandAll()
+            self.__expandTreeBtn.setText('Collapse')
+        else:
+            self.__treeWidget.collapseAll()
+            self.__expandTreeBtn.setText('Expand')
+
     def __extendedSelectionToggled(self, f):
         if f:
             self.__treeWidget.setSelectionMode(QTreeWidget.ExtendedSelection)
@@ -151,7 +178,7 @@ class MainWindow(QMainWindow):
         print('__allowDuplicated')
         
     def __multiColumnToggled(self, f):
-        self.__leftTopWidget.setVisible(f)
+        self.__leftNavWidget.setVisible(f)
         self.__treeWidget.setHeaderHidden(f)
 
     def __load(self):
