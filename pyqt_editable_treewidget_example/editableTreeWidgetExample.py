@@ -1,3 +1,4 @@
+import os.path
 import sys, json
 
 from PyQt5.QtGui import QKeySequence, QFont
@@ -182,23 +183,24 @@ class MainWindow(QMainWindow):
         self.__treeWidget.setHeaderHidden(f)
 
     def __load(self):
-        with open('tree.json', 'r') as f:
-            json_data = json.load(f)
+        if os.path.exists('tree.json'):
+            with open('tree.json', 'r') as f:
+                json_data = json.load(f)
 
-            def dictToTree(data, parent):
-                for obj in data:
-                    item = EditableTreeWidgetItem(parent)
-                    item.setText(0, obj['name'])
-                    if obj['editable']:
-                        item.setFlags(item.flags() | Qt.ItemIsEditable)
-                    else:
-                        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                def dictToTree(data, parent):
+                    for obj in data:
+                        item = EditableTreeWidgetItem(parent)
+                        item.setText(0, obj['name'])
+                        if obj['editable']:
+                            item.setFlags(item.flags() | Qt.ItemIsEditable)
+                        else:
+                            item.setFlags(item.flags() & ~Qt.ItemIsEditable)
 
-                    if len(obj['data']) > 0:
-                        dictToTree(obj['data'], item)
+                        if len(obj['data']) > 0:
+                            dictToTree(obj['data'], item)
 
-            self.__treeWidget.clear()
-            dictToTree(json_data, self.__treeWidget.invisibleRootItem())
+                self.__treeWidget.clear()
+                dictToTree(json_data, self.__treeWidget.invisibleRootItem())
 
     def __save(self):
         def treeToDict(tree):
