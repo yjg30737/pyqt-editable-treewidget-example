@@ -1,10 +1,10 @@
-import sys
+import sys, json
 
 from PyQt5.QtGui import QKeySequence, QFont
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
     QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton, QFileDialog, QSpinBox, QLabel, QSpacerItem, \
     QSizePolicy, QSplitter, QTableWidget
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import Qt, QSettings, QJsonDocument
 
 from pyqt_editable_treewidget_example.editableTreeWidget import EditableTreeWidget
 from pyqt_editable_treewidget_example.keyCommandWidget import KeyBindingWidget
@@ -13,11 +13,7 @@ from pyqt_editable_treewidget_example.keyCommandWidget import KeyBindingWidget
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.__initVal()
         self.__initUi()
-
-    def __initVal(self):
-        self.__settings_struct = QSettings('tree.ini', QSettings.IniFormat)
 
     def __initUi(self):
         self.setWindowTitle('QTreeWidget Playground')
@@ -147,8 +143,9 @@ class MainWindow(QMainWindow):
         self.__treeWidget.setHeaderHidden(f)
 
     def __load(self):
-        if self.__settings_struct.value('dict'):
-            data = eval(self.__settings_struct.value('dict'))
+        with open('tree.json', 'r') as f:
+            json_data = json.load(f)
+
             def dictToTree(data, parent):
                 for key, value in data.items():
                     item = QTreeWidgetItem(parent)
@@ -160,7 +157,7 @@ class MainWindow(QMainWindow):
                         item.setText(1, str(value))
 
             self.__treeWidget.clear()
-            dictToTree(data, self.__treeWidget.invisibleRootItem())
+            dictToTree(json_data, self.__treeWidget.invisibleRootItem())
 
     def __save(self):
         def treeToDict(tree):
@@ -178,8 +175,11 @@ class MainWindow(QMainWindow):
             return result
 
         treeDict = treeToDict(self.__treeWidget)
-        treeDictStr = str(treeDict)
-        self.__settings_struct.setValue('dict', treeDictStr)
+
+        json_data = json.dumps(treeDict)
+
+        with open('tree.json', 'w') as f:
+            f.write(json_data)
 
 
 if __name__ == "__main__":
