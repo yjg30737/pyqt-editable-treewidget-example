@@ -7,14 +7,17 @@ Intuitive enough to use, but this is for example only
 * PyQt5 >= 5.8
 
 ## Setup
-`python -m pip install git+https://github.com/yjg30737/pyqt-editable-treewidget-example.git --upgrade`
+* git clone ~
 
 ## Feature
 * Show the exmaple of adding & deleting the tree widget item in convinient way
 * Support multiple options:
     * make it unable to edit the parent item's name which has the child
-    * convert the QTreeWidget hierarchy into Python dictionary to save in "tree.ini" (with QSettings)
-    * Load the saved Python dictionary and convert it into QTreeWidget when user executes the window again
+    * user can make the certain item not editable
+    * convert the QTreeWidget hierarchy into JSON format (in Python, array of Python dictionary) to save in "tree.json"
+    * Load the saved JSON content and convert it into QTreeWidget when user executes the window again
+    
+The each object of tree.json contains multiple properties - name of the item(name), editable flag(editable), childs of the item(data)
 
 ## Usage
 Key command
@@ -27,6 +30,8 @@ Key command
 Context Menu
 * Add parent attribute
 * Add child attribute
+* Rename - rename the item
+* Editable - check to make the item editable or not
 
 ## Example
 Code Sample
@@ -49,7 +54,7 @@ Basic control of the treewidget
 
 https://user-images.githubusercontent.com/55078043/173221882-37766b10-d38a-4953-bc12-fb2b8bd7171b.mp4
 
-Whole window
+Whole window (v0.0.161)
 
-![image](https://user-images.githubusercontent.com/55078043/221781997-35a5040f-9114-4a32-95ec-c63695ac188a.png)
+![image](https://user-images.githubusercontent.com/55078043/222945406-34ff5410-d8f5-4ba7-8511-79e7e947fc6d.png)
 
