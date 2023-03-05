@@ -43,6 +43,12 @@ class EditableTreeWidget(QTreeWidget):
             renameAction.triggered.connect(self.rename)
             menu.addAction(renameAction)
 
+            editableAction = QAction('Editable')
+            editableAction.setCheckable(True)
+            editableAction.setChecked(True)
+            editableAction.setDisabled(True)
+            menu.addAction(editableAction)
+
         menu.exec(self.mapToGlobal(pos))
 
     def keyPressEvent(self, e):
