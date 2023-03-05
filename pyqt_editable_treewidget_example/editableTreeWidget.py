@@ -53,13 +53,19 @@ class EditableTreeWidget(QTreeWidget):
         item = self.itemAt(pos)
         if item:
             renameAction = QAction('Rename')
-            renameAction.triggered.connect(self.rename)
+            renameAction.triggered.connect(self.__rename)
             menu.addAction(renameAction)
+
+            def toggleEditable(f):
+                if f:
+                    item.setFlags(item.flags() | Qt.ItemIsEditable)
+                else:
+                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)
 
             editableAction = QAction('Editable')
             editableAction.setCheckable(True)
             editableAction.setChecked(item.flags() & Qt.ItemIsEditable)
-            editableAction.setDisabled(True)
+            editableAction.triggered.connect(toggleEditable)
             menu.addAction(editableAction)
 
         menu.exec(self.mapToGlobal(pos))
@@ -125,9 +131,10 @@ class EditableTreeWidget(QTreeWidget):
         if self.__parentItemShouldNotChangedFlag:
             item.parent().setFlags(item.flags() & ~Qt.ItemIsEditable)
 
-    def rename(self):
+    def __rename(self):
         self.editItem(self.currentItem(), 0)
         self.__editedAtOnce = True
+
 
     def remove_attr(self):
         parent_item = self.currentItem().parent()
