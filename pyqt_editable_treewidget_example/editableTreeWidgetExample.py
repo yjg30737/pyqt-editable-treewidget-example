@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, 
     QSizePolicy, QSplitter, QTableWidget
 from PyQt5.QtCore import Qt, QSettings
 
-from pyqt_editable_treewidget_example.editableTreeWidget import EditableTreeWidget
+from pyqt_editable_treewidget_example.editableTreeWidget import EditableTreeWidget, EditableTreeWidgetItem
 from pyqt_editable_treewidget_example.keyCommandWidget import KeyBindingWidget
 
 
@@ -187,7 +187,7 @@ class MainWindow(QMainWindow):
 
             def dictToTree(data, parent):
                 for key, value in data.items():
-                    item = QTreeWidgetItem(parent)
+                    item = EditableTreeWidgetItem(parent)
                     item.setText(0, str(key))
                     item.setFlags(item.flags() | Qt.ItemIsEditable)
                     if isinstance(value, dict):

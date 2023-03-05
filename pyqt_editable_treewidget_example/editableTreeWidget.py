@@ -1,8 +1,20 @@
 import sys
 
-from PyQt5.QtGui import QKeySequence
+from PyQt5.QtGui import QKeySequence, QIcon
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMenu
 from PyQt5.QtCore import Qt
+
+
+class EditableTreeWidgetItem(QTreeWidgetItem):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def setFlags(self, aflags) -> None:
+        super().setFlags(aflags)
+        if self.flags() & Qt.ItemIsEditable:
+            self.setIcon(0, QIcon())
+        else:
+            self.setIcon(0, QIcon('./ico/lock.svg'))
 
 
 class EditableTreeWidget(QTreeWidget):
@@ -15,7 +27,7 @@ class EditableTreeWidget(QTreeWidget):
         self.__editedAtOnce = False
         self.__parentItemShouldNotChangedFlag = False
 
-        item = QTreeWidgetItem(self)
+        item = EditableTreeWidgetItem(self)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         item.setText(0, 'Parent Attribute')
         self.setCurrentItem(item)
@@ -38,14 +50,15 @@ class EditableTreeWidget(QTreeWidget):
         menu.addAction(addParentAttrAction)
         menu.addAction(addChildAttrAction)
 
-        if self.itemAt(pos):
+        item = self.itemAt(pos)
+        if item:
             renameAction = QAction('Rename')
             renameAction.triggered.connect(self.rename)
             menu.addAction(renameAction)
 
             editableAction = QAction('Editable')
             editableAction.setCheckable(True)
-            editableAction.setChecked(True)
+            editableAction.setChecked(item.flags() & Qt.ItemIsEditable)
             editableAction.setDisabled(True)
             menu.addAction(editableAction)
 
@@ -95,7 +108,7 @@ class EditableTreeWidget(QTreeWidget):
 
     def addParentAttr(self, text=None):
         text = 'dic' if not text or isinstance(text, bool) else text
-        item = QTreeWidgetItem(self)
+        item = EditableTreeWidgetItem(self)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         item.setText(0, text)
         self.setCurrentItem(item)
@@ -103,7 +116,7 @@ class EditableTreeWidget(QTreeWidget):
 
     def addChildAttr(self, text=None):
         text = 'New Attr' if not text or isinstance(text, bool) else text
-        item = QTreeWidgetItem()
+        item = EditableTreeWidgetItem()
         item.setText(0, text)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         self.currentItem().addChild(item)
