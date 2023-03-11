@@ -4,10 +4,11 @@ import sys, json
 from PyQt5.QtGui import QKeySequence, QFont
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, QMainWindow, QApplication, QHBoxLayout, \
     QGroupBox, QWidget, QVBoxLayout, QCheckBox, QMenu, QPushButton, QFileDialog, QSpinBox, QLabel, QSpacerItem, \
-    QSizePolicy, QSplitter, QTableWidget
+    QSizePolicy, QSplitter, QTableWidget, QDialog
 from PyQt5.QtCore import Qt, QSettings
 
 from pyqt_editable_treewidget_example.editableTreeWidget import EditableTreeWidget, EditableTreeWidgetItem
+from pyqt_editable_treewidget_example.inputDialog import InputDialog
 from pyqt_editable_treewidget_example.keyCommandWidget import KeyBindingWidget
 
 
@@ -28,7 +29,9 @@ class MainWindow(QMainWindow):
         self.__treeWidget.setHeaderHidden(True)
 
         addColBtn = QPushButton('Add Column')
+        addColBtn.clicked.connect(self.__addCol)
         delColBtn = QPushButton('Delete Column')
+        delColBtn.clicked.connect(self.__delCol)
 
         treeLbl = QLabel('Tree')
         treeLblFont = QFont('Arial', 12)
@@ -86,6 +89,7 @@ class MainWindow(QMainWindow):
 
         multiColumnChkBox = QCheckBox('Multi Column Mode (testing)')
         multiColumnChkBox.setChecked(False)
+        self.__duplicatedChkBox.setDisabled(True)
         multiColumnChkBox.toggled.connect(self.__multiColumnToggled)
         
         saveBtn = QPushButton('Save')
@@ -176,6 +180,19 @@ class MainWindow(QMainWindow):
 
     def __allowDuplicated(self):
         print('__allowDuplicated')
+
+    def __addCol(self):
+        labels = [self.__treeWidget.headerItem().text(i) for i in range(self.__treeWidget.headerItem().columnCount())]
+        dialog = InputDialog('New header', labels)
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            self.__treeWidget.setColumnCount(self.__treeWidget.columnCount()+1)
+            self.__treeWidget.setHeaderLabels(labels + [dialog.getNewName()])
+
+
+
+    def __delCol(self):
+        print('delete')
         
     def __multiColumnToggled(self, f):
         self.__leftNavWidget.setVisible(f)
