@@ -86,7 +86,6 @@ class MainWindow(QMainWindow):
 
         multiColumnChkBox = QCheckBox('Multi Column Mode (testing)')
         multiColumnChkBox.setChecked(False)
-        multiColumnChkBox.setDisabled(True)
         multiColumnChkBox.toggled.connect(self.__multiColumnToggled)
         
         saveBtn = QPushButton('Save')
@@ -180,7 +179,7 @@ class MainWindow(QMainWindow):
         
     def __multiColumnToggled(self, f):
         self.__leftNavWidget.setVisible(f)
-        self.__treeWidget.setHeaderHidden(f)
+        self.__treeWidget.setHeaderHidden(not f)
 
     def __load(self):
         if os.path.exists('tree.json'):
