@@ -32,8 +32,11 @@ class EditableTreeWidget(QTreeWidget):
         item.setText(0, 'Parent Attribute')
         self.setCurrentItem(item)
 
-        self.header().setVisible(False)
         self.setIndentation(10)
+
+        self.__header = self.header()
+        self.__header.setSectionsClickable(True)
+        self.__header.sectionClicked.connect(self.__sectionClicked)
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__prepareMenu)
@@ -135,6 +138,13 @@ class EditableTreeWidget(QTreeWidget):
         self.editItem(self.currentItem(), 0)
         self.__editedAtOnce = True
 
+    def __sectionClicked(self, column):
+        print(f"Header of column {column} clicked")
+        # Loop through all the items in the column and select them
+        # for row in range(self.topLevelItemCount()):
+        #     item = self.topLevelItem(row)
+        #     cell_item = item.child(column)
+        #     cell_item.setSelected(True)
 
     def remove_attr(self):
         parent_item = self.currentItem().parent()

@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
 
         multiColumnChkBox = QCheckBox('Multi Column Mode (testing)')
         multiColumnChkBox.setChecked(False)
-        self.__duplicatedChkBox.setDisabled(True)
+        multiColumnChkBox.setDisabled(True)
         multiColumnChkBox.toggled.connect(self.__multiColumnToggled)
         
         saveBtn = QPushButton('Save')
@@ -188,8 +188,6 @@ class MainWindow(QMainWindow):
         if reply == QDialog.Accepted:
             self.__treeWidget.setColumnCount(self.__treeWidget.columnCount()+1)
             self.__treeWidget.setHeaderLabels(labels + [dialog.getNewName()])
-
-
 
     def __delCol(self):
         print('delete')
