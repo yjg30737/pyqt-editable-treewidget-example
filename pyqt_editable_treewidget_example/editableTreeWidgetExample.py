@@ -31,8 +31,8 @@ class MainWindow(QMainWindow):
 
         addColBtn = QPushButton('Add Column')
         addColBtn.clicked.connect(self.__addCol)
-        delColBtn = QPushButton('Delete Column')
-        delColBtn.clicked.connect(self.__delCol)
+        hideColBtn = QPushButton('Hide Column')
+        hideColBtn.clicked.connect(self.__hideCol)
 
         treeLbl = QLabel('Tree')
         treeLblFont = QFont('Arial', 12)
@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         lay.addWidget(treeLbl)
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(addColBtn)
-        lay.addWidget(delColBtn)
+        lay.addWidget(hideColBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
         self.__leftNavWidget = QWidget()
@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
 
         multiColumnChkBox = QCheckBox('Multi Column Mode (testing)')
         multiColumnChkBox.setChecked(False)
-        multiColumnChkBox.setDisabled(True)
+        # multiColumnChkBox.setDisabled(True)
         multiColumnChkBox.toggled.connect(self.__multiColumnToggled)
 
         saveBtn = QPushButton('Save')
@@ -190,13 +190,19 @@ class MainWindow(QMainWindow):
             self.__treeWidget.setColumnCount(self.__treeWidget.columnCount()+1)
             self.__treeWidget.setHeaderLabels(labels + [dialog.getNewName()])
 
-    # TODO complete "delete column" feature
-    def __delCol(self):
-        labels = [self.__treeWidget.headerItem().text(i) for i in range(self.__treeWidget.headerItem().columnCount())]
-        dialog = CheckBoxDialog('New header', labels)
+    def __hideCol(self):
+        columns = [(self.__treeWidget.isColumnHidden(i), self.__treeWidget.headerItem().text(i))
+                  for i in range(self.__treeWidget.headerItem().columnCount())]
+        dialog = CheckBoxDialog('Show/Hide Columns', columns)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
-            idx_lst = dialog.getColumnIndexesToRemove()
+            col_info_lst = dialog.getColumnInfo()
+            for i in range(len(col_info_lst)-1, -1, -1):
+                state, idx = col_info_lst[i]
+                if state == 0:
+                    self.__treeWidget.hideColumn(idx)
+                else:
+                    self.__treeWidget.showColumn(idx)
 
     def __multiColumnToggled(self, f):
         self.__leftNavWidget.setVisible(f)
