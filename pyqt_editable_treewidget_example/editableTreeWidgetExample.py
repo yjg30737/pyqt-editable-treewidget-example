@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAction, QMessageBox, 
     QSizePolicy, QSplitter, QTableWidget, QDialog
 from PyQt5.QtCore import Qt, QSettings
 
+from pyqt_editable_treewidget_example.checkBoxDialog import CheckBoxDialog
 from pyqt_editable_treewidget_example.editableTreeWidget import EditableTreeWidget, EditableTreeWidgetItem
 from pyqt_editable_treewidget_example.inputDialog import InputDialog
 from pyqt_editable_treewidget_example.keyCommandWidget import KeyBindingWidget
@@ -91,7 +92,7 @@ class MainWindow(QMainWindow):
         multiColumnChkBox.setChecked(False)
         multiColumnChkBox.setDisabled(True)
         multiColumnChkBox.toggled.connect(self.__multiColumnToggled)
-        
+
         saveBtn = QPushButton('Save')
         saveBtn.clicked.connect(self.__save)
 
@@ -189,9 +190,14 @@ class MainWindow(QMainWindow):
             self.__treeWidget.setColumnCount(self.__treeWidget.columnCount()+1)
             self.__treeWidget.setHeaderLabels(labels + [dialog.getNewName()])
 
+    # TODO complete "delete column" feature
     def __delCol(self):
-        print('delete')
-        
+        labels = [self.__treeWidget.headerItem().text(i) for i in range(self.__treeWidget.headerItem().columnCount())]
+        dialog = CheckBoxDialog('New header', labels)
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            idx_lst = dialog.getColumnIndexesToRemove()
+
     def __multiColumnToggled(self, f):
         self.__leftNavWidget.setVisible(f)
         self.__treeWidget.setHeaderHidden(not f)
