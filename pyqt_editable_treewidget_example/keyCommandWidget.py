@@ -1,10 +1,21 @@
 from collections import defaultdict
 
-from PyQt5.QtWidgets import QApplication, QWidget, QTableWidget, QVBoxLayout, QLabel, QHeaderView
+from PyQt5.QtWidgets import QApplication, QWidget, QTableWidget, QVBoxLayout, QLabel, QHeaderView, QTableWidgetItem
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QLineEdit
+
+
+KEY_MAP = {
+    'ADD_NEW_CHILD': ('Add New Child', 'Enter'),
+    'RENAME_ATTR': ('Rename Attribute', 'F2'),
+    'REMOVE_ATTR': ('Remove Attribute', 'Delete'),
+    'PREVIOUS_ATTR': ('Select Previous Attribute', 'Up'),
+    'NEXT_ATTR': ('Select Next Attribute', 'Down'),
+    'GO_PARENT_ATTR': ('Go to Parent Attribute', 'Shift+Up'),
+    'GO_CHILD_ATTR': ('Go to Child Attribute', 'Shift+Down'),
+}
 
 
 class ShortcutLineEdit(QLineEdit):
@@ -42,6 +53,18 @@ class KeyBindingWidget(QWidget):
         lbl = QLabel('Key Bindings')
 
         actionsTableWidget = QTableWidget()
+        actionsTableWidget.setColumnCount(2)
+        key_map_lst = list(KEY_MAP.values())
+        actionsTableWidget.setRowCount(len(key_map_lst))
+        actionsTableWidget.horizontalHeader().setVisible(False)
+        actionsTableWidget.verticalHeader().setVisible(False)
+        actionsTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        for i in range(len(key_map_lst)):
+            actionsTableWidget.setItem(i, 0, QTableWidgetItem(key_map_lst[i][0]))
+            actionsTableWidget.setItem(i, 1, QTableWidgetItem(key_map_lst[i][1]))
+
+        actionsTableWidget.setDisabled(True)
 
         # actionsDict = defaultdict(str)
         # for w in QApplication.allWidgets():
