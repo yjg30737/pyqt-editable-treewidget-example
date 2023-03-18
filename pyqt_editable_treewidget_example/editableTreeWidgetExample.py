@@ -53,8 +53,12 @@ class MainWindow(QMainWindow):
         self.__expandTreeBtn.setCheckable(True)
         self.__expandTreeBtn.toggled.connect(self.__expandToggled)
 
+        self.__clearBtn = QPushButton('Clear')
+        self.__clearBtn.clicked.connect(self.__treeWidget.clear)
+
         lay = QHBoxLayout()
         lay.addWidget(self.__expandTreeBtn)
+        lay.addWidget(self.__clearBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
         self.__rightNavWidget = QWidget()
