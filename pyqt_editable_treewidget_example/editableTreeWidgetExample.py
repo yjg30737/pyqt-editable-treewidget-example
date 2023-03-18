@@ -88,10 +88,10 @@ class MainWindow(QMainWindow):
         self.__makeItUnableToChangeWhichHasChild = QCheckBox('Make it unable to change item\'s name which has child')
         self.__makeItUnableToChangeWhichHasChild.toggled.connect(self.__makeItUnableToChangeWhichHasChildToggled)
 
-        multiColumnChkBox = QCheckBox('Multi Column Mode (testing)')
-        multiColumnChkBox.setChecked(False)
-        # multiColumnChkBox.setDisabled(True)
+        multiColumnChkBox = QCheckBox('Multi Column Mode')
         multiColumnChkBox.toggled.connect(self.__multiColumnToggled)
+        f = True if self.__settings_struct.value('multicolumn') == '1' else False
+        multiColumnChkBox.setChecked(f)
 
         saveBtn = QPushButton('Save')
         saveBtn.clicked.connect(self.__save)
@@ -207,6 +207,7 @@ class MainWindow(QMainWindow):
     def __multiColumnToggled(self, f):
         self.__leftNavWidget.setVisible(f)
         self.__treeWidget.setHeaderHidden(not f)
+        self.__settings_struct.setValue('multicolumn', str(int(f)))
 
     def __load(self):
         if os.path.exists('tree.json'):
@@ -216,7 +217,9 @@ class MainWindow(QMainWindow):
                 def dictToTree(data, parent):
                     for obj in data:
                         item = EditableTreeWidgetItem(parent)
-                        item.setText(0, obj['name'])
+                        header_val_lst = list(obj['name'].values())
+                        for i in range(len(header_val_lst)):
+                            item.setText(i, header_val_lst[i])
                         if obj['editable']:
                             item.setFlags(item.flags() | Qt.ItemIsEditable)
                         else:
@@ -226,24 +229,41 @@ class MainWindow(QMainWindow):
                             dictToTree(obj['data'], item)
 
                 self.__treeWidget.clear()
+                header_key_lst = json_data[0]['name'].keys()
+                self.__treeWidget.setColumnCount(len(header_key_lst))
+                self.__treeWidget.setHeaderLabels(header_key_lst)
                 dictToTree(json_data, self.__treeWidget.invisibleRootItem())
 
     def __save(self):
         def treeToDict(tree):
             result_obj_lst = []
             for i in range(tree.topLevelItemCount()):
-                item = tree.topLevelItem(i)
-                result_obj = {'name': item.text(0), 'editable': bool(item.flags() & Qt.ItemIsEditable),
-                              'data': treeToDictHelper(item)}
+                top_item = tree.topLevelItem(i)
+
+                # get each header's name(key) and its data(value)
+                header_item = tree.headerItem()
+                header_name_dict = dict()
+                for j in range(header_item.columnCount()):
+                    header_name_dict[header_item.text(j)] = top_item.text(j)
+
+                result_obj = {'name': header_name_dict, 'editable': bool(top_item.flags() & Qt.ItemIsEditable),
+                              'data': treeToDictHelper(tree, top_item)}
                 result_obj_lst.append(result_obj)
             return result_obj_lst
 
-        def treeToDictHelper(item):
+        def treeToDictHelper(tree, item):
             result_obj_lst = []
             for i in range(item.childCount()):
                 child = item.child(i)
-                result_obj = {'name': child.text(0), 'editable': bool(child.flags() & Qt.ItemIsEditable),
-                              'data': treeToDictHelper(child)}
+
+                # get each header's name(key) and its data(value)
+                header_item = tree.headerItem()
+                header_name_dict = dict()
+                for j in range(header_item.columnCount()):
+                    header_name_dict[header_item.text(j)] = child.text(j)
+
+                result_obj = {'name': header_name_dict, 'editable': bool(child.flags() & Qt.ItemIsEditable),
+                              'data': treeToDictHelper(tree, child)}
                 result_obj_lst.append(result_obj)
             return result_obj_lst
 

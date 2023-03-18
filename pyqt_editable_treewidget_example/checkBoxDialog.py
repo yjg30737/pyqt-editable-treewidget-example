@@ -13,7 +13,7 @@ class CheckBoxDialog(QDialog):
         self.setWindowFlags(Qt.WindowCloseButtonHint)
 
         self.__grpBox = QGroupBox()
-        self.__grpBox.setTitle('Choose columns to delete')
+        self.__grpBox.setTitle('Uncheck columns to hide')
 
         lay = QVBoxLayout()
 
