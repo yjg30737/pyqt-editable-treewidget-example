@@ -25,8 +25,7 @@ class MainWindow(QMainWindow):
     def __initUi(self):
         self.setWindowTitle('QTreeWidget Playground')
         self.__treeWidget = EditableTreeWidget()
-        # ['Name', 'Description']
-        self.__treeWidget.setHeaderLabels(['Name'])
+        self.__initTree()
         self.__treeWidget.setHeaderHidden(True)
 
         addColBtn = QPushButton('Add Column')
@@ -53,8 +52,8 @@ class MainWindow(QMainWindow):
         self.__expandTreeBtn.setCheckable(True)
         self.__expandTreeBtn.toggled.connect(self.__expandToggled)
 
-        self.__clearBtn = QPushButton('Clear')
-        self.__clearBtn.clicked.connect(self.__treeWidget.clear)
+        self.__clearBtn = QPushButton('Reset to Default')
+        self.__clearBtn.clicked.connect(self.__initTree)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__expandTreeBtn)
@@ -277,6 +276,12 @@ class MainWindow(QMainWindow):
 
         with open('tree.json', 'w') as f:
             f.write(json_data)
+
+    def __initTree(self):
+        self.__treeWidget.clear()
+        self.__treeWidget.setColumnCount(1)
+        self.__treeWidget.setHeaderLabels(['Name'])
+        self.__treeWidget.initTreeWidgetForUser()
 
 
 if __name__ == "__main__":

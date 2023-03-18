@@ -27,10 +27,7 @@ class EditableTreeWidget(QTreeWidget):
         self.__editedAtOnce = False
         self.__parentItemShouldNotChangedFlag = False
 
-        item = EditableTreeWidgetItem(self)
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
-        item.setText(0, 'Parent Attribute')
-        self.setCurrentItem(item)
+        self.initTreeWidgetForUser()
 
         self.setIndentation(10)
 
@@ -72,6 +69,12 @@ class EditableTreeWidget(QTreeWidget):
             menu.addAction(editableAction)
 
         menu.exec(self.mapToGlobal(pos))
+
+    def initTreeWidgetForUser(self):
+        item = EditableTreeWidgetItem(self)
+        item.setFlags(item.flags() | Qt.ItemIsEditable)
+        item.setText(0, 'Parent Attribute')
+        self.setCurrentItem(item)
 
     def keyPressEvent(self, e):
         try:
