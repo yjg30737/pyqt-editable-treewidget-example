@@ -131,11 +131,12 @@ class EditableTreeWidget(QTreeWidget):
         item = EditableTreeWidgetItem()
         item.setText(0, text)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
-        self.currentItem().addChild(item)
-        self.setCurrentItem(item)
-        self.editItem(item, 0)
-        if self.__parentItemShouldNotChangedFlag:
-            item.parent().setFlags(item.flags() & ~Qt.ItemIsEditable)
+        if self.currentItem() is not None:  # add a judging statements
+            self.currentItem().addChild(item)
+            self.setCurrentItem(item)
+            self.editItem(item, 0)
+            if self.__parentItemShouldNotChangedFlag:
+                item.parent().setFlags(item.flags() & ~Qt.ItemIsEditable)
 
     def __rename(self):
         self.editItem(self.currentItem(), 0)
