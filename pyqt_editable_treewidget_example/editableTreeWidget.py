@@ -150,14 +150,15 @@ class EditableTreeWidget(QTreeWidget):
         #     cell_item.setSelected(True)
 
     def remove_attr(self):
-        parent_item = self.currentItem().parent()
-        if parent_item:
-            item = self.currentItem()
-            item.takeChildren()
-            parent_item.removeChild(item)
-            self.setCurrentItem(parent_item)
-        else:
-            self.takeTopLevelItem(self.indexOfTopLevelItem(self.currentItem()))
+        for item in self.selectedItems():
+            parent_item = item.parent()
+            if parent_item:
+                item = self.currentItem()
+                item.takeChildren()
+                parent_item.removeChild(item)
+                self.setCurrentItem(parent_item)
+            else:
+                self.takeTopLevelItem(self.indexOfTopLevelItem(self.currentItem()))
 
     def parentItemShouldNotChanged(self, f):
         self.__parentItemShouldNotChangedFlag = f
